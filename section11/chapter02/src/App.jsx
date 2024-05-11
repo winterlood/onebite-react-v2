@@ -4,6 +4,7 @@ import {
   useState,
   useReducer,
   useCallback,
+  createContext,
 } from "react";
 import Header from "./components/Header";
 import Editor from "./components/Editor";
@@ -41,13 +42,13 @@ function reducer(state, action) {
           : item
       );
     case "DELETE":
-      return state.filter(
-        (item) => item.id !== action.targetId
-      );
+      return state.filter((item) => item.id !== action.targetId);
     default:
       return state;
   }
 }
+
+export const TodoContext = createContext();
 
 function App() {
   const [todos, dispatch] = useReducer(reducer, mockData);
@@ -82,12 +83,17 @@ function App() {
   return (
     <div className="App">
       <Header />
-      <Editor onCreate={onCreate} />
-      <List
-        todos={todos}
-        onUpdate={onUpdate}
-        onDelete={onDelete}
-      />
+      <TodoContext.Provider
+        value={{
+          todos,
+          onCreate,
+          onUpdate,
+          onDelete,
+        }}
+      >
+        <Editor />
+        <List />
+      </TodoContext.Provider>
     </div>
   );
 }
